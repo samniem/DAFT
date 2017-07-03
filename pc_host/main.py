@@ -29,6 +29,9 @@ def main():
     if args.update:
         return update(config)
 
+    if args.diagnostics:
+        return diagnostics()
+
     try:
         start_time = time.time()
         beaglebone_dut = reserve_device(args)
@@ -391,6 +394,9 @@ def local_execute(command, timeout=60, ignore_return_codes=None, cwd=None):
         raise subprocess.CalledProcessError(returncode = return_code,
                                               cmd = command, output = output)
 
+def diagnostics():
+    print("Hello world")
+
 class ImageNameError(Exception):
     pass
 
@@ -473,6 +479,12 @@ def parse_args():
         action="store_true",
         default=False,
         help="Flash DUT and reboot it in test mode without running test stuff")
+
+    parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        default=False,
+        help="Run diagnostics tool to troubleshoot for DAFT problems")
 
     return parser.parse_args()
 
