@@ -20,6 +20,7 @@ import shutil
 import argparse
 import subprocess
 import configparser
+import signal
 
 def main():
     args = parse_args()
@@ -78,6 +79,16 @@ def main():
         if beaglebone_dut:
             release_device(beaglebone_dut)
         raise
+
+def signalquit(signum, frame):
+    '''
+    Handling of exit signal to exit gracefully
+    '''
+    print("Received signal: ", signum, ". Starting exit process...")
+    if beaglebone_dut:
+        release_device(beaglebone_dut)
+    print("Exiting DAFT.")
+    sys.exit()
 
 def update(config):
     '''
@@ -477,4 +488,5 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, signalquit)
     sys.exit(main())
