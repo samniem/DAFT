@@ -47,7 +47,7 @@ def main():
         return 0
 
     except KeyboardInterrupt:
-        print("Keyboard interrupt, stopping DAFT run")
+        print("Keyboard interrupt, stopping DAFT run")a: add qa tests for mraa-gpio.
         if beaglebone_dut:
             release_device(beaglebone_dut)
             output = remote_execute(beaglebone_dut["bb_ip"],
@@ -80,15 +80,6 @@ def main():
             release_device(beaglebone_dut)
         raise
 
-def signalquit(signum, frame):
-    '''
-    Handling of exit signal to exit gracefully
-    '''
-    print("Received signal: ", signum, ". Starting exit process...")
-    if beaglebone_dut:
-        release_device(beaglebone_dut)
-    print("Exiting DAFT.")
-    sys.exit()
 
 def update(config):
     '''
@@ -140,6 +131,16 @@ def time_used(start_time):
     seconds = int(round(seconds))
     time_taken = str(minutes) + "min " + str(seconds) + "s"
     return time_taken
+
+def signalquit(signum, frame):
+    '''
+    Handling of exit signal to exit gracefully
+    '''
+    print("Received signal: ", signum, ". Starting exit process...")
+    if beaglebone_dut:
+        release_device(beaglebone_dut)
+    print("Exiting DAFT.")
+    sys.exit(0)
 
 def reserve_device(args):
     '''
@@ -370,7 +371,7 @@ def remote_execute(remote_ip, command, timeout = 60, ignore_return_codes = None,
         return output
 
 def local_execute(command, timeout=60, ignore_return_codes=None, cwd=None):
-    """
+    """Catching SIGTERM in Python
     Execute a command on local machine. Returns combined stdout and stderr if
     return code is 0 or included in the list 'ignore_return_codes'. Otherwise
     raises a subprocess error.
@@ -488,5 +489,4 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, signalquit)
     sys.exit(main())
