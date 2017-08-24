@@ -54,7 +54,6 @@ def main():
                                     ("killall -s SIGINT aft").split(),
                                     timeout=10, config = config)
         return 0
-
     except DevicesBlacklistedError:
         return 5
     except DeviceNameError:
@@ -84,11 +83,14 @@ def signalquit(signum, frame):
     '''
     Handling of exit signal to exit gracefully
     '''
-    print("Received signal: ", signum, ". Starting exit process...")
-    if beaglebone_dut:
-        release_device(beaglebone_dut)
-    print("Exiting DAFT.")
-    sys.exit()
+    print("Received signal:", signum)
+    print("Starting exit process.")
+    release_device(beaglebone_dut)
+    output = remote_execute(beaglebone_dut["bb_ip"],
+                            ("killall -s SIGINT aft").split(),
+                            timeout=10, config = config)
+    print("Killed all DAFT processes. Exiting DAFT")
+    sys.exit(0)
 
 def update(config):
     '''
